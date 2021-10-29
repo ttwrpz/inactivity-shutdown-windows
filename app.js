@@ -37,7 +37,8 @@ figlet.text('Welcome, ' + require("os").userInfo().username +'! it\'s running :P
 
 let
     cpu_usage = Array(),
-    network_usage = Array();
+    network_usage_tx = Array(),
+    network_usage_rx = Array();
 
 let trigger_shutdown = 0;
 
@@ -45,7 +46,8 @@ setInterval(function (){
     si.networkStats()
         .then(data => {
             data.tx_sec = undefined;
-            network_usage.push(data[0].rx_sec)
+            network_usage_tx.push(data[0].tx_sec);
+            network_usage_rx.push(data[0].rx_sec);
         })
         .catch(error => console.error(error));
 
@@ -56,28 +58,33 @@ setInterval(function (){
         .catch(error => console.error(error));
 }, 1000)
 
-setInterval(function(){
+let active_trigger = 0;
+
+setInterval(async function () {
 
     const avg_cpu = average(cpu_usage);
-    const avg_network = average(network_usage) / 125000;
-    let shutdown_trigger = 0;
+    let avg_network_tx = average(network_usage_tx) / 125000;
+    let avg_network_rx = average(network_usage_rx) / 125000;
 
-    if(avg_cpu < nconf.get('trigger_cpu_percentage_target') && avg_network < nconf.get('trigger_network_percentage_target')){
+    if (avg_cpu < nconf.get('trigger_cpu_percentage_target') && avg_network_tx < nconf.get('trigger_network_percentage_target') && avg_network_rx < nconf.get('trigger_network_percentage_target')) {
         trigger_shutdown++;
         cpu_usage = Array();
-        network_usage = Array()
-        const shutdown_countdown = nconf.get('trigger_shutdown_times') * nconf.get('trigger_seconds') - trigger_shutdown;
+        avg_network_tx = Array();
+        avg_network_rx = Array();
+        const shutdown_countdown = nconf.get('trigger_shutdown_times') * nconf.get('trigger_seconds') - (nconf.get('trigger_seconds') * trigger_shutdown);
 
+        active_trigger = 1;
         console.warn('Warning! Shutdown in ' + shutdown_countdown + ' Seconds');
-        shutdown_trigger = 1;
-    }else{
-        if(shutdown_trigger == 1){
-            console.warn('Your Windows is back to active!');
-            shutdown_trigger = 0;
+    } else {
+        trigger_shutdown = 0;
+
+        if (active_trigger == 1) {
+            console.log('Your Windows is back to active!');
+            active_trigger = 0;
         }
     }
 
-    if(trigger_shutdown === nconf.get('trigger_shutdown_times')){
+    if (trigger_shutdown === nconf.get('trigger_shutdown_times')) {
         trigger_shutdown = 0;
         shutDownWin.shutdown(nconf.get('trigger_shutdown_countdown_seconds'), false, `The system will shut down in ${nconf.get('trigger_shutdown_countdown_seconds')} seconds by Auto shutdown when Inactivity in ${nconf.get('trigger_shutdown_times') * nconf.get('trigger_seconds')} seconds.`);
     }
