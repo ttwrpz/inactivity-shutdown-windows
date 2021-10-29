@@ -18,7 +18,7 @@ nconf.argv()
     .file({ file: 'config.json' });
 
 nconf.set('trigger_seconds', 5);
-nconf.set('trigger_shutdown_times', 5);
+nconf.set('trigger_shutdown_times', 60);
 nconf.set('trigger_shutdown_countdown_seconds', 60);
 nconf.set('trigger_cpu_percentage_target', 15);
 nconf.set('trigger_network_percentage_target', 300);
@@ -53,12 +53,16 @@ setInterval(function(){
         trigger_shutdown++;
         cpu_usage = Array();
         network_usage = Array()
-        console.log(trigger_shutdown);
+        console.warning('Warning! Shutdown in ' + (nconf.get('trigger_shutdown_times')/nconf.get('trigger_seconds')) - trigger_shutdown + 'Seconds')
+    }else{
+        trigger_shutdown = 0;
     }
+
     if(trigger_shutdown === nconf.get('trigger_shutdown_times')){
         trigger_shutdown = 0;
-        shutDownWin.shutdown(nconf.get('trigger_shutdown_countdown_seconds'), false, `The system will shut down in ${nconf.get('trigger_shutdown_countdown_seconds')} seconds by Auto shutdown when Inactivity in ${nconf.get('trigger_seconds')}.`);
+        shutDownWin.shutdown(nconf.get('trigger_shutdown_countdown_seconds'), false, `The system will shut down in ${nconf.get('trigger_shutdown_countdown_seconds')} seconds by Auto shutdown when Inactivity in ${nconf.get('trigger_shutdown_times') * nconf.get('trigger_seconds')} seconds.`);
     }
+
 },nconf.get('trigger_seconds') * 1000)
 
 
