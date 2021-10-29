@@ -68,9 +68,6 @@ setInterval(function () {
 
     if (avg_cpu < nconf.get('trigger_cpu_percentage_target') && avg_network_tx < nconf.get('trigger_network_percentage_target') && avg_network_rx < nconf.get('trigger_network_percentage_target')) {
         trigger_shutdown++;
-        cpu_usage = Array();
-        avg_network_tx = Array();
-        avg_network_rx = Array();
         const shutdown_countdown = nconf.get('trigger_shutdown_times') * nconf.get('trigger_seconds') - (nconf.get('trigger_seconds') * trigger_shutdown);
 
         active_trigger = 1;
@@ -88,6 +85,10 @@ setInterval(function () {
         trigger_shutdown = 0;
         shutDownWin.shutdown(nconf.get('trigger_shutdown_countdown_seconds'), false, `The system will shut down in ${nconf.get('trigger_shutdown_countdown_seconds')} seconds by Auto shutdown when Inactivity in ${nconf.get('trigger_shutdown_times') * nconf.get('trigger_seconds')} seconds.`);
     }
+
+    cpu_usage = Array();
+    avg_network_tx = Array();
+    avg_network_rx = Array();
 
 },nconf.get('trigger_seconds') * 1000)
 
