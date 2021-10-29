@@ -20,7 +20,7 @@ nconf.argv()
 nconf.set('trigger_seconds', 5);
 nconf.set('trigger_shutdown_times', 60);
 nconf.set('trigger_shutdown_countdown_seconds', 60);
-nconf.set('trigger_cpu_percentage_target', 40);
+nconf.set('trigger_cpu_percentage_target', 15);
 nconf.set('trigger_network_percentage_target', 300);
 
 figlet.text('Welcome, ' + require("os").userInfo().username +'! it\'s running :P', {
