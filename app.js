@@ -1,6 +1,5 @@
 const createError = require('http-errors');
 const express = require('express');
-const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 
@@ -61,15 +60,21 @@ setInterval(function(){
 
     const avg_cpu = average(cpu_usage);
     const avg_network = average(network_usage) / 125000;
+    let shutdown_trigger = 0;
 
     if(avg_cpu < nconf.get('trigger_cpu_percentage_target') && avg_network < nconf.get('trigger_network_percentage_target')){
         trigger_shutdown++;
         cpu_usage = Array();
         network_usage = Array()
-        const shutdown_countdown = nconf.get('trigger_shutdown_times') * nconf.get('trigger_seconds') - trigger_shutdown
-        console.warn('Warning! Shutdown in ' + shutdown_countdown + ' Seconds')
+        const shutdown_countdown = nconf.get('trigger_shutdown_times') * nconf.get('trigger_seconds') - trigger_shutdown;
+
+        console.warn('Warning! Shutdown in ' + shutdown_countdown + ' Seconds');
+        shutdown_trigger = 1;
     }else{
-        trigger_shutdown = 0;
+        if(shutdown_trigger == 1){
+            console.warn('Your Windows is back to active!');
+            shutdown_trigger = 0;
+        }
     }
 
     if(trigger_shutdown === nconf.get('trigger_shutdown_times')){
