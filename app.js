@@ -20,7 +20,7 @@ nconf.argv()
 nconf.set('trigger_seconds', 5);
 nconf.set('trigger_shutdown_times', 60);
 nconf.set('trigger_shutdown_countdown_seconds', 60);
-nconf.set('trigger_cpu_percentage_target', 15);
+nconf.set('trigger_cpu_percentage_target', 30);
 nconf.set('trigger_network_percentage_target', 300);
 
 figlet.text('Welcome, ' + require("os").userInfo().username +'! it\'s running :P', {
@@ -60,7 +60,7 @@ setInterval(function (){
 
 let active_trigger = 0;
 
-setInterval(function () {
+setInterval(async function () {
 
     const avg_cpu = average(cpu_usage);
     let avg_network_tx = average(network_usage_tx) / 125000;
@@ -84,11 +84,11 @@ setInterval(function () {
 
     if (trigger_shutdown === nconf.get('trigger_shutdown_times')) {
         trigger_shutdown = 0;
-        figlet.text('Goodbye, ' + require("os").userInfo().username +' :\'(', {
+        figlet.text('Goodbye, ' + require("os").userInfo().username + ' :\'(', {
             horizontalLayout: 'default',
             verticalLayout: 'default',
             whitespaceBreak: true
-        }, function(err, data) {
+        }, function (err, data) {
             if (err) {
                 console.dir(err);
                 return;
@@ -96,7 +96,10 @@ setInterval(function () {
             console.log(data);
         });
         new PowerShell(`shutdown -r -t ${nconf.get('trigger_shutdown_countdown_seconds')} -c "The system will shut down in ${nconf.get('trigger_shutdown_countdown_seconds')} seconds by Auto shutdown when Inactivity in ${nconf.get('trigger_shutdown_times') * nconf.get('trigger_seconds')} seconds."`);
-        process.exit(1);
+
+        setTimeout(function () {
+            process.exit(1);
+        }, 10000);
     }
 
     cpu_usage = Array();
