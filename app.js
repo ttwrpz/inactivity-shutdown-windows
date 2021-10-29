@@ -49,9 +49,6 @@ setInterval(function(){
     const avg_cpu = average(cpu_usage);
     const avg_network = average(network_usage) / 125000;
 
-    console.log(avg_cpu + ' ' + avg_network)
-    console.log(avg_network < nconf.get('trigger_network_percentage_target'))
-
     if(avg_cpu < nconf.get('trigger_cpu_percentage_target') && avg_network < nconf.get('trigger_network_percentage_target')){
         trigger_shutdown++;
         cpu_usage = Array();
