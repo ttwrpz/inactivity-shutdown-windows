@@ -60,7 +60,7 @@ setInterval(function (){
 
 let active_trigger = 0;
 
-setInterval(async function () {
+setInterval(function () {
 
     const avg_cpu = average(cpu_usage);
     let avg_network_tx = average(network_usage_tx) / 125000;
