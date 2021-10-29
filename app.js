@@ -12,6 +12,7 @@ const osu = require('node-os-utils');
 const cpu = osu.cpu;
 const average = require('@extra-array/average');
 const nconf = require('nconf');
+const figlet = require('figlet');
 
 nconf.argv()
     .env()
@@ -22,6 +23,18 @@ nconf.set('trigger_shutdown_times', 60);
 nconf.set('trigger_shutdown_countdown_seconds', 60);
 nconf.set('trigger_cpu_percentage_target', 15);
 nconf.set('trigger_network_percentage_target', 300);
+
+figlet.text('Welcome it\'s running :P', {
+    horizontalLayout: 'default',
+    verticalLayout: 'default',
+    whitespaceBreak: true
+}, function(err, data) {
+    if (err) {
+        console.dir(err);
+        return;
+    }
+    console.log(data);
+});
 
 let
     cpu_usage = Array(),
@@ -53,7 +66,8 @@ setInterval(function(){
         trigger_shutdown++;
         cpu_usage = Array();
         network_usage = Array()
-        console.warning('Warning! Shutdown in ' + (nconf.get('trigger_shutdown_times')/nconf.get('trigger_seconds')) - trigger_shutdown + 'Seconds')
+        const shutdown_countdown = nconf.get('trigger_shutdown_times') * nconf.get('trigger_seconds') - trigger_shutdown
+        console.warn('Warning! Shutdown in ' + shutdown_countdown + ' Seconds')
     }else{
         trigger_shutdown = 0;
     }
@@ -64,8 +78,6 @@ setInterval(function(){
     }
 
 },nconf.get('trigger_seconds') * 1000)
-
-
 
 app.use(logger('dev'));
 app.use(express.json());
