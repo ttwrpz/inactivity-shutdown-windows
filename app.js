@@ -32,8 +32,8 @@ let trigger_shutdown = 0;
 setInterval(function (){
     si.networkStats()
         .then(data => {
-            network_usage.push(data)
-            console.log(data);
+            data.tx_sec = undefined;
+            network_usage.push(data[0].rx_sec)
         })
         .catch(error => console.error(error));
 
@@ -46,12 +46,20 @@ setInterval(function (){
 
 setInterval(function(){
 
-    const avg_cpu = average();
-    const avg_network = average(cpu_usage);
+    const avg_cpu = average(cpu_usage);
+    const avg_network = average(network_usage) / 125000;
 
-    if(avg_cpu < nconf.get('trigger_cpu_percentage_target') && avg_network < nconf.get('trigger_network_percentage_target')) trigger_shutdown++;
+    console.log(avg_cpu + ' ' + avg_network)
+    console.log(avg_network < nconf.get('trigger_network_percentage_target'))
+
+    if(avg_cpu < nconf.get('trigger_cpu_percentage_target') && avg_network < nconf.get('trigger_network_percentage_target')){
+        trigger_shutdown++;
+        cpu_usage = Array();
+        network_usage = Array()
+        console.log(trigger_shutdown);
+    }
     if(trigger_shutdown === nconf.get('trigger_shutdown_times')){
-        trigger_shutdown = 0
+        trigger_shutdown = 0;
         shutDownWin.shutdown(nconf.get('trigger_shutdown_countdown_seconds'), false, `The system will shut down in ${nconf.get('trigger_shutdown_countdown_seconds')} seconds by Auto shutdown when Inactivity in ${nconf.get('trigger_seconds')}.`);
     }
 },nconf.get('trigger_seconds') * 1000)
@@ -75,8 +83,7 @@ app.use(function(err, req, res, next) {
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
   // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+  res.sendStatus(err.status || 500);
 });
 
 module.exports = app;
