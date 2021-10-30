@@ -1,14 +1,11 @@
-const createError = require('http-errors');
 const express = require('express');
-const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 
 const app = express();
 
 const PowerShell = require("powershell");
 const si = require('systeminformation');
-const osu = require('node-os-utils');
-const cpu = osu.cpu;
+const cpu = require('node-os-utils').cpu;
 const average = require('@extra-array/average');
 const nconf = require('nconf');
 const figlet = require('figlet');
@@ -17,8 +14,9 @@ nconf.argv()
     .env()
     .file({ file: 'config.json' });
 
-nconf.set('trigger_seconds', 5);
-nconf.set('trigger_shutdown_times', 600);
+//Application Config
+nconf.set('trigger_interval_seconds', 5);
+nconf.set('trigger_shutdown_times', 60);
 nconf.set('trigger_shutdown_countdown_seconds', 60);
 nconf.set('trigger_cpu_percentage_target', 30);
 nconf.set('trigger_network_percentage_target', 300);
@@ -72,10 +70,10 @@ setInterval(function () {
     if (avg_cpu < nconf.get('trigger_cpu_percentage_target') && avg_network_tx < nconf.get('trigger_network_percentage_target') && avg_network_rx < nconf.get('trigger_network_percentage_target')) {
         trigger_shutdown++;
 
-        const shutdown_countdown = nconf.get('trigger_shutdown_times') * nconf.get('trigger_seconds') - (nconf.get('trigger_seconds') * trigger_shutdown);
+        const shutdown_countdown = nconf.get('trigger_shutdown_times') * nconf.get('trigger_interval_seconds') - (nconf.get('trigger_interval_seconds') * trigger_shutdown);
 
         active_trigger = 1;
-        console.warn('Warning! Shutdown in ' + shutdown_countdown + ' Seconds');
+        console.warn('Warning! Shutdown in ' + shutdown_countdown + ' Seconds due to inactivity or low usage on your computer.');
     } else {
         trigger_shutdown = 0;
 
@@ -87,6 +85,7 @@ setInterval(function () {
 
     if (trigger_shutdown === nconf.get('trigger_shutdown_times')) {
         trigger_shutdown = 0;
+        console.log('Attempt to shut down your computer.')
         figlet.text('Goodbye, ' + require("os").userInfo().username + ' :\'(', {
             horizontalLayout: 'default',
             verticalLayout: 'default',
@@ -98,7 +97,13 @@ setInterval(function () {
             }
             console.log(data);
         });
-        new PowerShell(`shutdown -r -t ${nconf.get('trigger_shutdown_countdown_seconds')} -c "The system will shut down in ${nconf.get('trigger_shutdown_countdown_seconds')} seconds by Auto shutdown when Inactivity in ${nconf.get('trigger_shutdown_times') * nconf.get('trigger_seconds')} seconds."`, );
+        new PowerShell(
+            `shutdown -r -t ${nconf.get('trigger_shutdown_countdown_seconds')} -c "The system will shut down in ${nconf.get('trigger_shutdown_countdown_seconds')} seconds by Auto shutdown when Inactivity in ${nconf.get('trigger_shutdown_times') * nconf.get('trigger_interval_seconds')} seconds."`, 
+            false, 
+            function(){
+                console.log('Success attempt to send shutdown signal and application to exit in 10 seconds')
+            }
+        );
 
         setTimeout(function () {
             process.exit(1);
@@ -109,17 +114,9 @@ setInterval(function () {
     avg_network_tx = Array();
     avg_network_rx = Array();
 
-},nconf.get('trigger_seconds') * 1000)
+},nconf.get('trigger_interval_seconds') * 1000)
 
 app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  next(createError(404));
-});
 
 // error handler
 app.use(function(err, req, res, next) {
@@ -127,8 +124,8 @@ app.use(function(err, req, res, next) {
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-  // render the error page
-  res.sendStatus(err.status || 500);
+  // show error on console
+  console.error(err.status || 500);
 });
 
 module.exports = app;
