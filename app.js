@@ -18,12 +18,13 @@ nconf.argv()
     .file({ file: 'config.json' });
 
 nconf.set('trigger_seconds', 5);
-nconf.set('trigger_shutdown_times', 60);
+nconf.set('trigger_shutdown_times', 600);
 nconf.set('trigger_shutdown_countdown_seconds', 60);
 nconf.set('trigger_cpu_percentage_target', 30);
 nconf.set('trigger_network_percentage_target', 300);
+nconf.set('debug', false);
 
-figlet.text('Welcome, ' + require("os").userInfo().username +'! it\'s running :P', {
+figlet.text('Welcome, ' + require("os").userInfo().username +' :O', {
     horizontalLayout: 'default',
     verticalLayout: 'default',
     whitespaceBreak: true
@@ -60,11 +61,13 @@ setInterval(function (){
 
 let active_trigger = 0;
 
-setInterval(async function () {
+setInterval(function () {
 
     const avg_cpu = average(cpu_usage);
-    let avg_network_tx = average(network_usage_tx) / 125000;
-    let avg_network_rx = average(network_usage_rx) / 125000;
+    let avg_network_tx = average(network_usage_tx) * 0.008 * 0.001;
+    let avg_network_rx = average(network_usage_rx) * 0.008 * 0.001;
+
+    if(nconf.get('debug')) console.info(`DEBUG; CPU: ${parseFloat(avg_cpu).toFixed(5)}, Transmit: ${parseFloat(avg_network_tx).toFixed(5)}, Receive: ${parseFloat(avg_network_rx).toFixed(5)}`);
 
     if (avg_cpu < nconf.get('trigger_cpu_percentage_target') && avg_network_tx < nconf.get('trigger_network_percentage_target') && avg_network_rx < nconf.get('trigger_network_percentage_target')) {
         trigger_shutdown++;
@@ -76,7 +79,7 @@ setInterval(async function () {
     } else {
         trigger_shutdown = 0;
 
-        if (active_trigger == 1) {
+        if (active_trigger === 1) {
             console.log('Your Windows is back to active!');
             active_trigger = 0;
         }
@@ -95,7 +98,7 @@ setInterval(async function () {
             }
             console.log(data);
         });
-        new PowerShell(`shutdown -r -t ${nconf.get('trigger_shutdown_countdown_seconds')} -c "The system will shut down in ${nconf.get('trigger_shutdown_countdown_seconds')} seconds by Auto shutdown when Inactivity in ${nconf.get('trigger_shutdown_times') * nconf.get('trigger_seconds')} seconds."`);
+        new PowerShell(`shutdown -r -t ${nconf.get('trigger_shutdown_countdown_seconds')} -c "The system will shut down in ${nconf.get('trigger_shutdown_countdown_seconds')} seconds by Auto shutdown when Inactivity in ${nconf.get('trigger_shutdown_times') * nconf.get('trigger_seconds')} seconds."`, );
 
         setTimeout(function () {
             process.exit(1);
