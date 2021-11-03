@@ -9,6 +9,14 @@ const cpu = require('node-os-utils').cpu;
 const average = require('@extra-array/average');
 const nconf = require('nconf');
 const figlet = require('figlet');
+const Logger = require('chegs-simple-logger');
+let log = new Logger({
+    logGeneral: true,
+    logWarning:  true,
+    logError:  false,
+    logDetail: false,
+    logDebug: true
+});
 
 const AutoGitUpdate = require('auto-git-update');
 
@@ -29,7 +37,7 @@ nconf.argv()
 
 //First Time Application Config
 if(!nconf.get('version')){
-    nconf.set('version', process.env.npm_package_version);
+    nconf.set('version', (Math.random() + 1).toString(36).substring(7));
     nconf.set('trigger_interval_seconds', 5);
     nconf.set('trigger_shutdown_times', 60);
     nconf.set('trigger_shutdown_countdown_seconds', 60);
@@ -82,7 +90,7 @@ setInterval(function () {
     let avg_network_tx = average(network_usage_tx) * 0.008 * 0.001;
     let avg_network_rx = average(network_usage_rx) * 0.008 * 0.001;
 
-    if(nconf.get('debug')) console.info(`DEBUG; CPU: ${parseFloat(avg_cpu).toFixed(5)}, Transmit: ${parseFloat(avg_network_tx).toFixed(5)}, Receive: ${parseFloat(avg_network_rx).toFixed(5)}`);
+    if(nconf.get('debug')) log.debug(`DEBUG; CPU: ${parseFloat(avg_cpu).toFixed(5)}, Transmit: ${parseFloat(avg_network_tx).toFixed(5)}, Receive: ${parseFloat(avg_network_rx).toFixed(5)}`);
 
     if (avg_cpu < nconf.get('trigger_cpu_percentage_target') && avg_network_tx < nconf.get('trigger_network_percentage_target') && avg_network_rx < nconf.get('trigger_network_percentage_target')) {
         trigger_shutdown++;
@@ -90,19 +98,19 @@ setInterval(function () {
         const shutdown_countdown = nconf.get('trigger_shutdown_times') * nconf.get('trigger_interval_seconds') - (nconf.get('trigger_interval_seconds') * trigger_shutdown);
 
         active_trigger = 1;
-        console.warn('Warning! Shutdown in ' + shutdown_countdown + ' Seconds due to inactivity or low usage on your computer.');
+        log.warning('Shutdown in ' + shutdown_countdown + ' Seconds due to inactivity or low usage on your computer.');
     } else {
         trigger_shutdown = 0;
 
         if (active_trigger === 1) {
-            console.log('Your Windows is back to active!');
+            log.detail('Your Windows is back to active!');
             active_trigger = 0;
         }
     }
 
     if (trigger_shutdown === nconf.get('trigger_shutdown_times')) {
         trigger_shutdown = 0;
-        console.log('Attempt to shut down your computer.')
+        log.detail('Attempt to shut down your computer.')
         figlet.text('Goodbye, ' + require("os").userInfo().username + ' :\'(', {
             horizontalLayout: 'default',
             verticalLayout: 'default',
@@ -112,13 +120,13 @@ setInterval(function () {
                 console.dir(err);
                 return;
             }
-            console.log(data);
+            log.error(data);
         });
         new PowerShell(
             `shutdown -s -t ${nconf.get('trigger_shutdown_countdown_seconds')} -c "The system will shut down in ${nconf.get('trigger_shutdown_countdown_seconds')} seconds by Auto shutdown when Inactivity in ${nconf.get('trigger_shutdown_times') * nconf.get('trigger_interval_seconds')} seconds."`, 
             false, 
             function(){
-                console.log('Success attempt to send shutdown signal and application to exit in 10 seconds')
+                log.detail('Success attempt to send shutdown signal and application to exit in 10 seconds')
             }
         );
 
