@@ -23,7 +23,7 @@ const AutoGitUpdate = require('auto-git-update');
 const config = {
     repository: 'https://github.com/EpicEmeraldPlayz/nodejs-inactivity-shutdown-windows',
     tempLocation: require("os").tmpdir(),
-    executeOnComplete: 'npm-install.bat',
+    executeOnComplete: 'npm-run.bat',
     exitOnComplete: true
 }
 
