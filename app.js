@@ -98,7 +98,7 @@ setInterval(function () {
             console.log(data);
         });
         new PowerShell(
-            `shutdown -r -t ${nconf.get('trigger_shutdown_countdown_seconds')} -c "The system will shut down in ${nconf.get('trigger_shutdown_countdown_seconds')} seconds by Auto shutdown when Inactivity in ${nconf.get('trigger_shutdown_times') * nconf.get('trigger_interval_seconds')} seconds."`, 
+            `shutdown -s -t ${nconf.get('trigger_shutdown_countdown_seconds')} -c "The system will shut down in ${nconf.get('trigger_shutdown_countdown_seconds')} seconds by Auto shutdown when Inactivity in ${nconf.get('trigger_shutdown_times') * nconf.get('trigger_interval_seconds')} seconds."`, 
             false, 
             function(){
                 console.log('Success attempt to send shutdown signal and application to exit in 10 seconds')
