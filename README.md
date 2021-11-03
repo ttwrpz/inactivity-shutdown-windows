@@ -1,5 +1,5 @@
 # Welcome to Incitivity Shutdown for Windows 👋
-![Version](https://img.shields.io/badge/version-2.2.3-brown.svg?cacheSeconds=2592000)
+![Version](https://img.shields.io/badge/version-2.2.4-brown.svg?cacheSeconds=2592000)
 [![License: mit](https://img.shields.io/badge/License-MIT-red.svg)](https://github.com/EpicEmeraldPlayz/nodejs-inactivity-shutdown-windows/blob/master/LICENSE)
 
 ### 🏠 [Homepage](https://github.com/EpicEmeraldPlayz/nodejs-inactivity-shutdown-windows/)
