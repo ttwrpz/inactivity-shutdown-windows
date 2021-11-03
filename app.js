@@ -25,7 +25,7 @@ updater.autoUpdate();
 
 nconf.argv()
     .env()
-    .file({ file: 'config.json' });
+    .file({ file: 'config.conf' });
 
 //First Time Application Config
 if(!nconf.get('version')){
