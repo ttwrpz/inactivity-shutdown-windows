@@ -1,12 +1,13 @@
 {
   "name": "shutdown-windows-express",
-  "version": "2.0.1",
+  "version": "2.2.0",
   "private": true,
   "scripts": {
     "start": "node ./bin/www"
   },
   "dependencies": {
     "@extra-array/average": "^1.1.7",
+    "auto-git-update": "^2.0.2",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "express": "~4.16.1",

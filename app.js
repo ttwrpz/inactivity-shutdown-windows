@@ -10,17 +10,34 @@ const average = require('@extra-array/average');
 const nconf = require('nconf');
 const figlet = require('figlet');
 
+const AutoGitUpdate = require('auto-git-update');
+
+const config = {
+    repository: 'https://github.com/EpicEmeraldPlayz/nodejs-inactivity-shutdown-windows',
+    tempLocation: 'tmp/',
+    executeOnComplete: 'npm-install.bat',
+    exitOnComplete: true
+}
+
+const updater = new AutoGitUpdate(config);
+
+updater.autoUpdate();
+
 nconf.argv()
     .env()
     .file({ file: 'config.json' });
 
-//Application Config
-nconf.set('trigger_interval_seconds', 5);
-nconf.set('trigger_shutdown_times', 60);
-nconf.set('trigger_shutdown_countdown_seconds', 60);
-nconf.set('trigger_cpu_percentage_target', 30);
-nconf.set('trigger_network_percentage_target', 300);
-nconf.set('debug', false);
+//First Time Application Config
+if(!nconf.get('version')){
+    nconf.set('version', process.env.npm_package_version);
+    nconf.set('trigger_interval_seconds', 5);
+    nconf.set('trigger_shutdown_times', 60);
+    nconf.set('trigger_shutdown_countdown_seconds', 60);
+    nconf.set('trigger_cpu_percentage_target', 15);
+    nconf.set('trigger_network_percentage_target', 100);
+    nconf.set('debug', false);
+    nconf.save();
+}
 
 figlet.text('Welcome, ' + require("os").userInfo().username +' :O', {
     horizontalLayout: 'default',
