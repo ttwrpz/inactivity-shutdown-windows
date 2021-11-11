@@ -24,6 +24,7 @@ const config = {
     repository: 'https://github.com/EpicEmeraldPlayz/nodejs-inactivity-shutdown-windows',
     tempLocation: require("os").tmpdir(),
     executeOnComplete: 'npm-run.bat',
+    ignoreFiles: ['config.conf'],
     exitOnComplete: true
 }
 
