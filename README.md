@@ -12,13 +12,13 @@
 >- **Check system information & status interval**
    `trigger_interval_seconds` - every 5 seconds
 >- **Amount of time that meets requirement for auto shutdown to trigger**
-   `trigger_shutdown_times ` - 60 times
+   `trigger_shutdown_times` - 60 times
 >- **Amount of time before actually shutdown your computer**
-   `trigger_shutdown_countdown_seconds ` - 60 seconds
+   `trigger_shutdown_countdown_seconds` - 60 seconds
 >- **Maximum CPU percentage that will trigger auto shutdown**
-   `trigger_cpu_percentage_target ` - 15%
+   `trigger_cpu_percentage_target` - 15%
 >- **Maximum Network (TX & RX) percentage that will trigger auto shutdown**
-   `trigger_network_percentage_target ` - 100 mbps
+   `trigger_network_percentage_target` - 100 mbps
 >- **Debug messages in console**
    `debug` - false
 
