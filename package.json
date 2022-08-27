@@ -1,6 +1,6 @@
 {
   "name": "inactivity-shutdown-windows",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "description": "The purpose of this project is to automatically shut down Windows based on CPU and network usage when it's below a certain threshold.",
   "scripts": {
     "start": "node app.js"
