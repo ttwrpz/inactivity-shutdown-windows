@@ -18,14 +18,6 @@ const figlet = require("figlet");
 const prompt = require("prompt");
 const colors = require("@colors/colors/safe");
 
-let log = new Logger({
-    logGeneral: true,
-    logWarning: true,
-    logError: false,
-    logDetail: false,
-    logDebug: true
-});
-
 /* ================================ */
 /*           CONFIGURATIONS         */
 /* ================================ */
@@ -33,6 +25,14 @@ let log = new Logger({
 nconf.argv()
     .env()
     .file({file: './config.conf'});
+
+let log = new Logger({
+    logGeneral: true,
+    logWarning: true,
+    logError: true,
+    logDetail: true,
+    logDebug: nconf.get('debug') ?? true
+});
 
 if (nconf.get('settings_version') !== settings_version) {
 
@@ -111,38 +111,23 @@ if (nconf.get('settings_version') !== settings_version) {
     prompt.message = colors.rainbow("Setup");
     prompt.delimiter = colors.green(" > ");
 
-    (function(){
-        return new Promise(function(resolve) {
+    prompt.start();
 
-            prompt.start();
+    prompt.get(schema, function (err, result) {
+        nconf.set('settings_version', settings_version);
+        nconf.set('trigger_interval', result.trigger_interval);
+        nconf.set('average_interval_reset', result.average_interval_reset);
+        nconf.set('trigger_shutdown_times', result.trigger_shutdown_times);
+        nconf.set('trigger_shutdown_countdown', result.trigger_shutdown_countdown);
+        nconf.set('trigger_cpu_usage_target', result.trigger_cpu_usage_target);
+        nconf.set('trigger_network_usage_target', result.trigger_network_usage_target);
+        nconf.set('debug', result.debug);
+        nconf.save();
 
-            prompt.get(schema, function (err, result) {
-                nconf.set('settings_version', settings_version);
-                nconf.set('trigger_interval', result.trigger_interval);
-                nconf.set('average_interval_reset', result.average_interval_reset);
-                nconf.set('trigger_shutdown_times', result.trigger_shutdown_times);
-                nconf.set('trigger_shutdown_countdown', result.trigger_shutdown_countdown);
-                nconf.set('trigger_cpu_usage_target', result.trigger_cpu_usage_target);
-                nconf.set('trigger_network_usage_target', result.trigger_network_usage_target);
-                nconf.set('debug', result.debug);
-                nconf.save();
-
-                console.log(colors.green(
-                    figlet.textSync('Config Saved!', {
-                        horizontalLayout: 'default',
-                        verticalLayout: 'default',
-                        whitespaceBreak: true
-                    }))
-                );
-
-                resolve();
-            });
-        }).then(function () {
-            log.detail(colors.green('Config saved!'));
-            log.detail(colors.red('Please restart application again!'));
-            process.exit();
-        })
-    })();
+        log.detail(colors.green('Config saved!'));
+        log.detail(colors.red('Please restart application again!'));
+        process.exit();
+    })
 
 } else {
     welcome();
@@ -201,7 +186,7 @@ const measure_system = setInterval(function () {
     let avg_network_tx = average(network_usage_tx) / 125000;
     let avg_network_rx = average(network_usage_rx) / 125000;
 
-    if (nconf.get('debug')) log.debug(`${colors.blue('CPU')}: ${parseFloat(avg_cpu).toFixed(5)} ${colors.yellow('%')}, ${colors.blue('Network Transmitted')}: ${avg_network_tx.toFixed(5)} ${colors.yellow('Mbps')}, ${colors.blue('Network Received')}: ${avg_network_rx.toFixed(5)} ${colors.yellow('Mbps')}`);
+    log.debug(`${colors.blue('CPU')}: ${parseFloat(avg_cpu).toFixed(5)} ${colors.yellow('%')}, ${colors.blue('Network Transmitted')}: ${avg_network_tx.toFixed(5)} ${colors.yellow('Mbps')}, ${colors.blue('Network Received')}: ${avg_network_rx.toFixed(5)} ${colors.yellow('Mbps')}`);
 
     if (avg_cpu < nconf.get('trigger_cpu_usage_target') && avg_network_tx < nconf.get('trigger_network_usage_target') && avg_network_rx < nconf.get('trigger_network_usage_target')) {
         trigger_shutdown++;
