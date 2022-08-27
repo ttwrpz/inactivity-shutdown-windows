@@ -8,16 +8,11 @@ const settings_version = '2.0.0';
 /*          PACKAGES IMPORT         */
 /* ================================ */
 
-const express = require('express');
-const morgan = require('morgan');
-
-const app = express();
-
+const cpu = require('node-os-utils').cpu;
 const Logger = require("chegs-simple-logger");
 const average = require("@extra-array/average");
 const PowerShell = require("powershell");
 const si = require("systeminformation");
-const cpuStats = require("cpu-stats");
 const nconf = require("nconf");
 const figlet = require("figlet");
 const prompt = require("prompt");
@@ -192,15 +187,11 @@ const measure_system_data = setInterval(function () {
         })
         .catch(error => log.error(error));
 
-    cpuStats(1000, function(err, result) {
-        if(err) return log.error(err);
-
-        let overallCPUCore = 0;
-        result.forEach(data => {
-            overallCPUCore += (100 - data.idle);
+    cpu.usage()
+        .then(cpuPercentage => {
+            cpu_usage.push(cpuPercentage);
         })
-        cpu_usage.push(overallCPUCore);
-    })
+        .catch(error => console.error(error));
 
 }, 1000)
 
@@ -256,17 +247,3 @@ const measure_system = setInterval(function () {
     }
 
 }, nconf.get('trigger_interval') * 1000)
-
-app.use(morgan('dev'));
-
-/* ================================ */
-/*           ERROR HANDLER          */
-/* ================================ */
-
-app.use(function (err, req, res) {
-    res.locals.message = err.message;
-    res.locals.error = req.app.get('env') === 'development' ? err : {};
-    log.error(err.status || 500);
-});
-
-module.exports = app;

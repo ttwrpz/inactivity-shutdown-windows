@@ -1,9 +1,6 @@
 # Inactivity Shutdown Windows
-![Version](https://img.shields.io/badge/version-4.0.0-yellow.svg?cacheSeconds=2592000)
+![Version](https://img.shields.io/badge/version-4.0.1-yellow.svg?cacheSeconds=2592000)
 [![License: mit](https://img.shields.io/badge/License-MIT-red.svg)](https://github.com/EpicEmeraldPlayz/nodejs-inactivity-shutdown-windows/blob/master/LICENSE)
-
-### 🏠 [Homepage](https://github.com/EpicEmeraldPlayz/inactivity-shutdown-windows/)
-
 
 ## About
 The purpose of this project is to automatically shut down Windows based on CPU and network usage when it's below a certain threshold.
