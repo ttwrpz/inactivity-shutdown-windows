@@ -5,7 +5,7 @@
 ## About
 The purpose of this project is to automatically shut down Windows based on CPU and network usage when it's below a certain threshold.
 
-## Install
+## Installation
 
 ```sh
 npm install
