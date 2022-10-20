@@ -28,12 +28,12 @@ npm run start
 
 ## Author
 
-👤 **EpicEmeraldPlayz**
+👤 **Theerawat Patthawee**
 
-* Github: [@EpicEmeraldPlayz](https://github.com/EpicEmeraldPlayz)
+* Github: [@ttwrpz](https://github.com/ttwrpz)
 
 ## 📝 License
 
-Copyright © 2021 [EpicEmeraldPlayz](https://github.com/EpicEmeraldPlayz).
+Copyright © 2021 [Theerawat Patthwee](https://github.com/ttwrpz).
 
-This project is [MIT](https://github.com/EpicEmeraldPlayz/nodejs-inactivity-shutdown-windows/blob/main/LICENSE) licensed.
+This project is [MIT](https://github.com/ttwrpz/nodejs-inactivity-shutdown-windows/blob/main/LICENSE) licensed.
