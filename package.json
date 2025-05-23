@@ -1,19 +1,53 @@
 {
+  "type": "module",
   "name": "inactivity-shutdown-windows",
-  "version": "4.0.2",
-  "description": "The purpose of this project is to automatically shut down Windows based on CPU and network usage when it's below a certain threshold.",
+  "version": "5.0.0",
+  "description": "An intelligent Windows auto-shutdown utility that monitors CPU and network activity with advanced averaging algorithms and user-friendly interface.",
+  "main": "app.js",
   "scripts": {
-    "start": "node app.js"
+    "start": "node app.js",
+    "reset": "node app.js --reset-config",
+    "export": "node app.js --export-config",
+    "import": "node app.js --import-config",
+    "web": "node app.js --port=3000",
+    "help": "node app.js --help",
+    "clean": "rm -f app.config.json && echo \"Configuration reset. Run 'npm start' to reconfigure.\""
   },
   "keywords": [
     "auto-shutdown",
-    "windows-utils"
+    "windows-utils",
+    "system-monitor",
+    "inactivity-detection",
+    "power-management",
+    "cpu-monitoring",
+    "network-monitoring",
+    "energy-saving",
+    "automation",
+    "nodejs"
   ],
-  "author": "Theerawat Patthawee",
+  "author": {
+    "name": "Theerawat Patthawee",
+    "email": "smrmakeyt@gmail.com",
+    "url": "https://github.com/ttwrpz"
+  },
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ttwrpz/inactivity-shutdown-windows.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ttwrpz/inactivity-shutdown-windows/issues"
+  },
+  "homepage": "https://github.com/ttwrpz/inactivity-shutdown-windows#readme",
+  "engines": {
+    "node": ">=12.0.0",
+    "npm": ">=6.0.0"
+  },
+  "os": [
+    "win32"
+  ],
   "dependencies": {
     "@colors/colors": "^1.5.0",
-    "@extra-array/average": "^1.1.7",
     "chegs-simple-logger": "^1.1.0",
     "cookie-parser": "^1.4.6",
     "debug": "^4.3.4",
@@ -24,6 +58,17 @@
     "systeminformation": "^5.12.6"
   },
   "devDependencies": {
+    "@types/figlet": "^1.7.0",
+    "@types/nconf": "^0.10.7",
+    "@types/node-os-utils": "^1.3.4",
     "node-os-utils": "^1.3.7"
-  }
+  },
+  "config": {
+    "settings_version": "3.0.0"
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/ttwrpz"
+  },
+  "packageManager": "pnpm@10.11.0+sha512.6540583f41cc5f628eb3d9773ecee802f4f9ef9923cc45b69890fb47991d4b092964694ec3a4f738a420c918a333062c8b925d312f42e4f0c263eb603551f977"
 }

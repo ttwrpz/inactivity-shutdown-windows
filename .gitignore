@@ -108,4 +108,4 @@ dist
 /.idea/*
 
 # Config
-/config.conf
+/app.config.json
